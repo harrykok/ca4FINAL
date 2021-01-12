@@ -1,28 +1,95 @@
 body {
-    background-color: rgb(54, 54, 54);
+    background-color: #495057;
     color: white;
+    font-family: 'Roboto', sans-serif;
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: 2fr 2fr;
+    justify-items: center;
 }
 
-.grid-item {
-    width: 95%;
-    height: 45px;
-    margin: 1%;
+/* Add another */
+#addTracking{
+    width: 90%;
+    height: 50px;
+    margin: 2%;
     border: 4px dotted white;
     border-radius: 15px;
     text-align: center;
 }
+.circle{
+    border:2px solid white;
+    width:20px;
+    height:20px;
+    border-radius:100%;
+    position:relative;
+    margin:5px;
+    display:inline-block;
+    vertical-align:middle;
+  }
+  .circle.plus:before,
+  .circle.plus:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:white;
+  }
+  .circle.plus:before{
+    width: 2px;
+    margin: 5px auto;
+  }
+  .circle.plus:after{
+    margin: auto 5px;
+    height: 2px;
+  }
+  .addAnotherText{
+    display:inline-block;
+    padding-top: 15px;
+  }
 
-.plus-button {
-	border: 2px solid lightgrey;
-	background-color: rgba(255, 255, 255, 0);
-	font-size: 12px;
-	height: 2.5em;
-	width: 2.5em;
-	border-radius: 999px;
-    position: relative;
+/* Tracking */
+.tracking{
+    width: 90%;
+    height: 80px;
+    margin: 1%;
+    background-color: #212529;
+    border-radius: 20px 20px 0 0;
+}
+.tableAlign{
+    width: 90%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 10px;
+}
+.cross{
+
+}
+#companyId{
+    margin-right:10px;
+    width:100%;
+    height:25px;
+}
+#queueId{
+    margin-right:10px;
+    width:100%;
+    height:25px;
+    background-color: #343A40;
+    border: none;
+    border-radius: 5px;
+}
+#search{
+    margin-left:10px;
+    width: 90px;
+    height: 25px;
+    background-color: rgb(223, 147, 6);
+    border-radius: 10px;
+    border-color: rgb(223, 147, 6);
+}
+#hideInactive{
+    margin-left:10px;
 }
