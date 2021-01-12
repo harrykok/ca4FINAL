@@ -1,0 +1,28 @@
+body {
+    background-color: rgb(54, 54, 54);
+    color: white;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+}
+
+.grid-item {
+    width: 95%;
+    height: 45px;
+    margin: 1%;
+    border: 4px dotted white;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.plus-button {
+	border: 2px solid lightgrey;
+	background-color: rgba(255, 255, 255, 0);
+	font-size: 12px;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 999px;
+    position: relative;
+}
