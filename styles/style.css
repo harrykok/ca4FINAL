@@ -6,7 +6,8 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 2fr 2fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
     justify-items: center;
 }
 
@@ -52,11 +53,11 @@ body {
     padding-top: 15px;
   }
 
-/* Tracking */
+/* Tracking top half */
 .tracking{
     width: 90%;
     height: 80px;
-    margin: 1%;
+    margin-top: 1%;
     background-color: #212529;
     border-radius: 20px 20px 0 0;
 }
@@ -92,4 +93,15 @@ body {
 }
 #hideInactive{
     margin-left:10px;
+}
+form{
+  margin-bottom: 0;
+}
+
+/* Tracking bottom half */
+.bottomHalf{   
+  width: 100%;
+  height: 250px;
+  background-color: #212529;
+  border-radius: 0 0 20px 20px;
 }
