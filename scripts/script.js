@@ -40,6 +40,8 @@ function closeTracking(trackerId) {
 function getQueueApi(trackerId) {
     console.log(trackerId);
 
+
+
     // https://ades-fsp.github.io/get-queue
     // do this dylan
     // i will do the html side after u get all the data i need out ... all queues , queue status
@@ -50,10 +52,10 @@ function getQueueApi(trackerId) {
 
 //cy stuff to keep dont delete
     //draw bottom half box
+
     // if (!document.getElementById("bottomhalf" + trackerId)) {
     //     document.getElementById("tracker" + trackerId).innerHTML +=
     //         '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
     //         'wahts up' +
     //         '</div>';
     // }
-

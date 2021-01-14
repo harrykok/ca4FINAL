@@ -1,5 +1,5 @@
 body {
-    background-color: #495057;
+    background-color: #E7EBF0;
     color: white;
     font-family: 'Roboto', sans-serif;
 }
@@ -8,6 +8,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
+    row-gap: 5%;
     justify-items: center;
 }
 
@@ -16,12 +17,13 @@ body {
     width: 90%;
     height: 50px;
     margin: 2%;
-    border: 4px dotted white;
+    border: 4px dotted #5682A3;
     border-radius: 15px;
     text-align: center;
+    color: #5682A3;
 }
 .circle{
-    border:2px solid white;
+    border:2px solid #5682A3;
     width:20px;
     height:20px;
     border-radius:100%;
@@ -38,7 +40,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background:white;
+    background:#5682A3;
   }
   .circle.plus:before{
     width: 2px;
@@ -56,19 +58,22 @@ body {
 /* Tracking top half */
 .tracking{
     width: 90%;
-    height: 80px;
-    margin-top: 1%;
-    background-color: #212529;
-    border-radius: 20px 20px 0 0;
+}
+form{
+  padding: 10px;
+  background-color: #5682A3;
+  box-shadow: 1px 2px black;
+  margin-bottom: 0;
 }
 .tableAlign{
     width: 90%;
     margin-left: 10%;
     margin-right: 10%;
-    margin-top: 10px;
 }
 .cross{
-
+  /* going to do this */
+  /* also change search button to arrow plane shape arrow */
+  /* change search text box styles */
 }
 #companyId{
     margin-right:10px;
@@ -79,7 +84,7 @@ body {
     margin-right:10px;
     width:100%;
     height:25px;
-    background-color: #343A40;
+    background-color: #F2F2F2;
     border: none;
     border-radius: 5px;
 }
@@ -87,21 +92,18 @@ body {
     margin-left:10px;
     width: 90px;
     height: 25px;
-    background-color: rgb(223, 147, 6);
+    background-color: #30A3E6;
     border-radius: 10px;
-    border-color: rgb(223, 147, 6);
+    border-color: #30A3E6;
 }
 #hideInactive{
     margin-left:10px;
-}
-form{
-  margin-bottom: 0;
 }
 
 /* Tracking bottom half */
 .bottomHalf{   
   width: 100%;
   height: 250px;
-  background-color: #212529;
-  border-radius: 0 0 20px 20px;
+  background-color: white;
+  box-shadow: 1px 2px black;
 }
