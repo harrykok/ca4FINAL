@@ -18,9 +18,9 @@ function addTracking() {
         '<td><span id="errorMsg' + trackerId + '"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><select id="queueId">' +
+        '<td><select class="queueId" id="queueId' + trackerId + '">' +
         '</select></td>' +
-        '<td colspan="2"><input type="checkbox" id="hideInactive" checked>' +
+        '<td colspan="2"><input type="checkbox" id="hideInactive" name="hideInactivez" onclick="hideInactives()" checked>' +
         '<label for="hideInactive">Hide Inactive</label></td>' +
         '</tr>' +
         '</table>' +
@@ -41,15 +41,14 @@ function closeTracking(trackerId) {
 }
 
 function getQueueApi(trackerId) {
-    console.log(trackerId);
+    console.log("Tracker Id: " + trackerId);
     var companyId = document.getElementById("companyId" + trackerId).value;
     var errorSpan = document.getElementById("errorMsg" + trackerId);
-    var expressions = "!`@#$%^&*()+=-[]\\\';,./{}|\":<>?~_"; //to see if the input has this shit
+    var expressions = "!`@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
 
     fetch('http://localhost:3000/company/queue?company_id=' + companyId)
         .then(response => { return response.json(); })
         .then(data => {
-            console.log(data); //returns the queues
             if (data.length == 0) {
                 errorSpan.innerText = "Unknown Company Id: " + companyId;
             }
@@ -66,8 +65,17 @@ function getQueueApi(trackerId) {
                 errorSpan.innerText = "Invalid Company Id";
             }
             else {
-                console.log(data); //also returns the queues
-                return data;
+                var optionString = "";
+                for (i = 0; i < data.length; i++) {
+                    console.log(data[i].queue_id);
+                    console.log(data[i].is_active);
+                    if (data[i].is_active == 1) {
+                        optionString += '<option name="options" value="' + data[i].is_active + '">' + data[i].queue_id + '</option> ';
+                    } else if (data[i].is_active == 0) {
+                        optionString += '<option name="options" value="' + data[i].is_active + '" disabled>' + data[i].queue_id + '</option> ';
+                    }
+                }
+                document.getElementById("queueId" + trackerId).innerHTML = optionString;
             }
         })
         .catch(error => {
@@ -77,25 +85,35 @@ function getQueueApi(trackerId) {
             }
         });
 
-    // https://ades-fsp.github.io/get-queue
-    // do this dylan
-    // i will do the html side after u get all the data i need out ... all queues , queue status
-    // get klanz data out also for graph ask klanz
-    // do validation for the queue according to the example cher showed in video
+}
+
+function hideInactives() {
+    var Checkbox = document.getElementsByName("hideInactivez");
+    var Options = document.getElementsByName("options");
+
+    if (Checkbox[0].checked == true) { //disable inactive
+        for (i = 0; i < Options.length; i++) {
+            if (Options[i].value == 0) {
+                Options[i].disabled = true;
+            }
+        }
+    }
+    if (Checkbox[0].checked == false) { //dont disable inactive
+        for (i = 0; i < Options.length; i++) {
+            if (Options[i].value == 0) {
+                Options[i].removeAttribute('disabled');
+            }
+        }
+    }
 
 }
 
-
-
-
-
-
-//cy stuff to keep dont delete
+function showGraph(trackerId) {
     //draw bottom half box
-
-    // if (!document.getElementById("bottomhalf" + trackerId)) {
-    //     document.getElementById("tracker" + trackerId).innerHTML +=
-    //         '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
-    //         'wahts up' +
-    //         '</div>';
-    // }
+    if (!document.getElementById("bottomhalf" + trackerId)) {
+        document.getElementById("tracker" + trackerId).innerHTML +=
+            '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
+            'wahts up' +
+            '</div>';
+    }
+}
