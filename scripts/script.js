@@ -9,13 +9,13 @@ function addTracking() {
         '<form action="#" onsubmit="getQueueApi(' + trackerId + ');return false">' +
         '<table class="tableAlign">' +
         '<tr>' +                        //append trackerId to make companyid unique
-        '<td><input type="text" id="companyId'+trackerId+'" placeholder="Company Id"></td>' +
+        '<td><input type="text" id="companyId' + trackerId + '" placeholder="Company Id"></td>' +
         '<td><input type="submit" id="search" value="Search"/></td>' +
         '<td><span class="cross" onclick="closeTracking(' + trackerId + ')">x</span></td>' +
         '<td id="closeTrackingCross"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><span id="errorMsg'+trackerId+'"></td>' +
+        '<td><span id="errorMsg' + trackerId + '"></td>' +
         '</tr>' +
         '<tr>' +
         '<td><select id="queueId">' +
@@ -42,33 +42,41 @@ function closeTracking(trackerId) {
 
 function getQueueApi(trackerId) {
     console.log(trackerId);
-    var companyId= document.getElementById("companyId"+trackerId).value;
-    var errorSpan=document.getElementById("errorMsg"+trackerId);
+    var companyId = document.getElementById("companyId" + trackerId).value;
+    var errorSpan = document.getElementById("errorMsg" + trackerId);
+    var expressions = "!`@#$%^&*()+=-[]\\\';,./{}|\":<>?~_"; //to see if the input has this shit
 
-    fetch('http://localhost:3000/company/queue?company_id='+companyId)  
-    .then(response => {return response.json();})
-    .then(data=>{
-        console.log(data);
-        if(data.length==0){
-            errorSpan.innerText="Unknown Company Id: "+companyId;
-        }
-        else if(companyId==""){
-            errorSpan.innerText="Company Id cannot be empty";
-        }
-        else if(companyId>9999999999){
-            errorSpan.innerText="Company Id should be less than or equals to 999999999";
-        }
-        else if(companyId<1000000000){
-            errorSpan.innerText="Company Id should be more than or equals to 1000000000";
-        }
-    })
-    .catch(error=>{
-        console.log(error);
-        if(error!=null){
-            errorSpan.innerText="Unable to establish connection with database";
-        }
-    });
-   
+    fetch('http://localhost:3000/company/queue?company_id=' + companyId)
+        .then(response => { return response.json(); })
+        .then(data => {
+            console.log(data); //returns the queues
+            if (data.length == 0) {
+                errorSpan.innerText = "Unknown Company Id: " + companyId;
+            }
+            else if (companyId == "") {
+                errorSpan.innerText = "Company Id cannot be empty";
+            }
+            else if (companyId > 9999999999) {
+                errorSpan.innerText = "Company Id should be less than or equals to 999999999";
+            }
+            else if (companyId < 1000000000) {
+                errorSpan.innerText = "Company Id should be more than or equals to 1000000000";
+            }
+            else if (companyId.includes(expressions)) {
+                errorSpan.innerText = "Invalid Company Id";
+            }
+            else {
+                console.log(data); //also returns the queues
+                return data;
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            if (error != null) {
+                errorSpan.innerText = "Unable to establish connection with database";
+            }
+        });
+
     // https://ades-fsp.github.io/get-queue
     // do this dylan
     // i will do the html side after u get all the data i need out ... all queues , queue status
@@ -78,7 +86,7 @@ function getQueueApi(trackerId) {
 }
 
 
-  
+
 
 
 
