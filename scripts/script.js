@@ -9,7 +9,7 @@ function addTracking() {
         '<form action="#" onsubmit="getQueueApi(' + trackerId + ');return false">' +
         '<table class="tableAlign">' +
         '<tr>' +                        //append trackerId to make companyid unique
-        '<td><input type="text" id="companyId' + trackerId + '" placeholder="Company Id"></td>' +
+        '<td><input type="text" class="companyId" id="companyId' + trackerId + '" placeholder="  Company Id"></td>' +
         '<td><input type="submit" id="search" value="Search"/></td>' +
         '<td><span class="cross" onclick="closeTracking(' + trackerId + ')">x</span></td>' +
         '<td id="closeTrackingCross"></td>' +
@@ -20,8 +20,8 @@ function addTracking() {
         '<tr>' +
         '<td><select class="queueId" id="queueId' + trackerId + '">' +
         '</select></td>' +
-        '<td colspan="2"><input type="checkbox" id="hideInactive" name="hideInactivez" onclick="hideInactives()" checked>' +
-        '<label for="hideInactive">Hide Inactive</label></td>' +
+        '<td colspan="2"><input type="checkbox" name="hideInactivez" onclick="hideInactives()" checked>' +
+        '<label for="hideInactive" id="hideInactive">Hide Inactive</label></td>' +
         '</tr>' +
         '</table>' +
         '</form>' +
