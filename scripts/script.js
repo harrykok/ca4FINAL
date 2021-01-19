@@ -18,13 +18,14 @@ function addTracking() {
         '<td><span id="errorMsg' + trackerId + '"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><select class="queueId" id="queueId' + trackerId + '">' +
+        '<td><select class="queueId" id="queueId' + trackerId + '" onchange = loadChart(this.value)>' +
         '</select></td>' +
         '<td colspan="2"><input type="checkbox" name="hideInactivez" onclick="hideInactives()" checked>' +
         '<label for="hideInactive" id="hideInactive">Hide Inactive</label></td>' +
         '</tr>' +
         '</table>' +
         '</form>' +
+        '<canvas id="'+trackerId+'" width="200" height="100""></canvas> '+
         '</div>';
     //add new addTracker box
     document.getElementById("grid-container").innerHTML +=
@@ -38,6 +39,8 @@ function addTracking() {
 function closeTracking(trackerId) {
     //remove tracker
     document.getElementById("tracker" + trackerId).remove();
+    //stop backend calling with function
+    stopGraph(trackerId); 
 }
 
 function getQueueApi(trackerId) {
@@ -76,6 +79,7 @@ function getQueueApi(trackerId) {
                     }
                 }
                 document.getElementById("queueId" + trackerId).innerHTML = optionString;
+                
             }
         })
         .catch(error => {
@@ -116,4 +120,79 @@ function showGraph(trackerId) {
             'wahts up' +
             '</div>';
     }
+}
+
+function getGraphData(queueid) {
+    var time = moment();
+    time = time.subtract(3, 'minutes');
+    time = moment(time).format();
+    time = time.replace("+", "%2B");
+    var queue_id = queueid;
+    console.log(queue_id);
+    
+
+    fetch(`http://localhost:3000/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
+        .then(response => response.json())
+        .then(data => {
+            for (i = 0; i < data.length; i++) {
+                countArray[i] = data[i].count;
+                timeArray[i] = (new Date(data[i].timestamp * 1000).toLocaleString().slice(11));
+            }
+        })
+        .catch(console.error);
+}
+
+
+function drawChart(queue_id, countArray, timeArray) {
+    getGraphData(queue_id);
+    var ctx = document.getElementById(trackerId);
+    console.log(countArray, timeArray);
+    var newChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timeArray,
+            datasets: [{
+                label: 'Arrival Rate',
+                data: countArray,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+function loadChart(queue_id) {
+    countArray = [];
+    timeArray=[];
+    update = setInterval(run=>drawChart(queue_id, countArray, timeArray), 3000);
+}
+
+function stopGraph(){
+    clearInterval(update);
 }
