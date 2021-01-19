@@ -1,4 +1,5 @@
 trackerId = 1;
+update=[];
 
 function addTracking() {
     //remove original addTracker
@@ -18,14 +19,13 @@ function addTracking() {
         '<td><span id="errorMsg' + trackerId + '"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><select class="queueId" id="queueId' + trackerId + '" onchange = loadChart(this.value)>' +
+        '<td><select class="queueId" id="queueId' + trackerId + '" onchange = "loadChart(this.value,' + trackerId + ')">' +
         '</select></td>' +
         '<td colspan="2"><input type="checkbox" name="hideInactivez" onclick="hideInactives()" checked>' +
         '<label for="hideInactive" id="hideInactive">Hide Inactive</label></td>' +
         '</tr>' +
         '</table>' +
         '</form>' +
-        '<canvas id="' + trackerId + '" width="200" height="100""></canvas> ' +
         '</div>';
     //add new addTracker box
     document.getElementById("grid-container").innerHTML +=
@@ -64,9 +64,10 @@ function getQueueApi(trackerId) {
                     console.log(data[i].queue_id);
                     console.log(data[i].is_active);
                     if (data[i].is_active == 1) {
-                        optionString += '<option name="options" value="' + data[i].is_active + '">' + data[i].queue_id + '</option> ';
+                        optionString += '<option name="options" value="' + data[i].queue_id + '">' + data[i].queue_id + '</option> ';
                     } else if (data[i].is_active == 0) {
                         optionString += '<option name="options" value="' + data[i].is_active + '" disabled>' + data[i].queue_id + '</option> ';
+                        optionString += '<option name="options" value="' + data[i].queue_id + '" disabled>' + data[i].queue_id + '</option> ';
                     }
                 }
                 document.getElementById("queueId" + trackerId).innerHTML = optionString;
@@ -168,7 +169,7 @@ function getGraphData(queueid) {
 }
 
 
-function drawChart(queue_id, countArray, timeArray) {
+function drawChart(queue_id, countArray, timeArray,trackerId) {
     getGraphData(queue_id);
     var ctx = document.getElementById(trackerId);
     console.log(countArray, timeArray);
@@ -212,12 +213,26 @@ function drawChart(queue_id, countArray, timeArray) {
         }
     });
 }
-function loadChart(queue_id) {
+function loadChart(queue_id, trackerId) {
     countArray = [];
     timeArray = [];
-    update = setInterval(run => drawChart(queue_id, countArray, timeArray), 3000);
+    console.log(trackerId + 'hi');
+    //draw bottom half box
+    if (!document.getElementById("bottomhalf" + trackerId)) {
+        document.getElementById("tracker" + trackerId).innerHTML +=
+            '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
+            '<canvas id="' + trackerId + '" width="200" height="100""></canvas>' +
+            '</div>';
+    }
+    update[trackerId]= {id: trackerId, chart:setInterval(function run() {
+        //put loading here
+        drawChart(queue_id, countArray, timeArray,trackerId)
+    }, 3000)}
 }
 
-function stopGraph() {
-    clearInterval(update);
+function stopGraph(trackerId) {
+   
+    console.log(update[trackerId].id)
+
+    clearInterval(update[trackerId].chart);
 }
