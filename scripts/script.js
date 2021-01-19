@@ -9,7 +9,7 @@ function addTracking() {
         '<form action="#" onsubmit="getQueueApi(' + trackerId + ');return false">' +
         '<table class="tableAlign">' +
         '<tr>' +                        //append trackerId to make companyid unique
-        '<td><input type="text" class="companyId" id="companyId' + trackerId + '" placeholder="  Company Id"></td>' +
+        '<td><input type="text" id="companyId' + trackerId + '" placeholder="Company Id" onInvalid="InvalidMsg(this)" oninput="InvalidMsg(this)" required="required"></td>' +
         '<td><input type="submit" id="search" value="Search"/></td>' +
         '<td><span class="cross" onclick="closeTracking(' + trackerId + ')">x</span></td>' +
         '<td id="closeTrackingCross"></td>' +
@@ -44,27 +44,26 @@ function getQueueApi(trackerId) {
     console.log("Tracker Id: " + trackerId);
     var companyId = document.getElementById("companyId" + trackerId).value;
     var errorSpan = document.getElementById("errorMsg" + trackerId);
-    var expressions = "!`@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+    var expressions = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/; //to see if the input has this shit
+    //var textbox = document.getElementById("companyId");
+    //console.log(textbox.value);
 
     fetch('http://localhost:3000/company/queue?company_id=' + companyId)
         .then(response => { return response.json(); })
         .then(data => {
+            console.log(data);
             if (data.length == 0) {
-                errorSpan.innerText = "Unknown Company Id: " + companyId;
+                //companyId.validity=false;
+                //companyId.setCustomValidity("unknown company id")
+                //console.log(companyId);
+                //InvalidMsg(companyId,0);
+                //InvalidMsg(0); //this also does not work
+                errorSpan.innerText = "Unknown Company Id: " + companyId; //can do the error like this
             }
-            else if (companyId == "") {
-                errorSpan.innerText = "Company Id cannot be empty";
-            }
-            else if (companyId > 9999999999) {
-                errorSpan.innerText = "Company Id should be less than or equals to 999999999";
-            }
-            else if (companyId < 1000000000) {
-                errorSpan.innerText = "Company Id should be more than or equals to 1000000000";
-            }
-            else if (companyId.includes(expressions)) {
-                errorSpan.innerText = "Invalid Company Id";
-            }
+
             else {
+                errorSpan.innerText = "";
+                //companyId.setCustomValidity("");
                 var optionString = "";
                 for (i = 0; i < data.length; i++) {
                     console.log(data[i].queue_id);
@@ -80,11 +79,53 @@ function getQueueApi(trackerId) {
         })
         .catch(error => {
             console.log(error);
-            if (error != null) {
-                errorSpan.innerText = "Unable to establish connection with database";
+            if (error = TypeError) {
+                errorSpan.innerText = "Failed to fetch";
             }
+            else if (error.code == 400) {  //need htis
+                errorSpan.innerText = "400 bad request.";
+            }
+            else if (error.code = 500) { //need this as well
+                errorSpan.innerText = "Internal server error.";
+            }
+            else if (error.code = 404) {
+                errorSpan.innerText = "404 Not found.";
+            }
+            // else if (error != null) {
+            //     errorSpan.innerText = "Unable to establish connection with database";
+            // }
+
         });
 
+}
+
+function InvalidMsg(textbox) {
+    var expressions = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    //console.log(textbox);
+    if (textbox.value === '') {
+        textbox.setCustomValidity
+            ('Company Id cannot be empty');
+    } else if (textbox.value < 1000000000) {
+        textbox.setCustomValidity
+            ('Company Id should be more than or equals to 1000000000');
+    } else if (textbox.value > 9999999999) {
+        textbox.setCustomValidity
+            ('Company Id should be less than or equals to 999999999');
+    } else if (expressions.test(textbox.value)) {
+        textbox.setCustomValidity
+            ('Invalid Company Id');
+    }
+    // else if (dataLength == 0) {  //dont need this chunk
+    //     textbox.setCustomValidity
+    //         ('Unknown Company Id');
+    //         console.log("entered unknown company")
+    //         console.log(textbox); //goes inside here when uunknown company id passed
+    // }
+    else {
+        textbox.setCustomValidity('');
+    }
+
+    return true;
 }
 
 function hideInactives() {
