@@ -25,7 +25,7 @@ function addTracking() {
         '</tr>' +
         '</table>' +
         '</form>' +
-        '<canvas id="'+trackerId+'" width="200" height="100""></canvas> '+
+        '<canvas id="' + trackerId + '" width="200" height="100""></canvas> ' +
         '</div>';
     //add new addTracker box
     document.getElementById("grid-container").innerHTML +=
@@ -40,33 +40,25 @@ function closeTracking(trackerId) {
     //remove tracker
     document.getElementById("tracker" + trackerId).remove();
     //stop backend calling with function
-    stopGraph(trackerId); 
+    stopGraph(trackerId);
 }
 
 function getQueueApi(trackerId) {
     console.log("Tracker Id: " + trackerId);
     var companyId = document.getElementById("companyId" + trackerId).value;
     var errorSpan = document.getElementById("errorMsg" + trackerId);
-    var expressions = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/; //to see if the input has this shit
-    //var textbox = document.getElementById("companyId");
-    //console.log(textbox.value);
+
 
     fetch('http://localhost:3000/company/queue?company_id=' + companyId)
         .then(response => { return response.json(); })
         .then(data => {
             console.log(data);
-            if (data.length == 0) {
-                //companyId.validity=false;
-                //companyId.setCustomValidity("unknown company id")
-                //console.log(companyId);
-                //InvalidMsg(companyId,0);
-                //InvalidMsg(0); //this also does not work
+            if (data.length == 0) { //check if there are any existing queues
                 errorSpan.innerText = "Unknown Company Id: " + companyId; //can do the error like this
             }
 
             else {
                 errorSpan.innerText = "";
-                //companyId.setCustomValidity("");
                 var optionString = "";
                 for (i = 0; i < data.length; i++) {
                     console.log(data[i].queue_id);
@@ -78,7 +70,7 @@ function getQueueApi(trackerId) {
                     }
                 }
                 document.getElementById("queueId" + trackerId).innerHTML = optionString;
-                
+
             }
         })
         .catch(error => {
@@ -86,18 +78,16 @@ function getQueueApi(trackerId) {
             if (error = TypeError) {
                 errorSpan.innerText = "Failed to fetch";
             }
-            else if (error.code == 400) {  //need htis
+            else if (error.code == 400) {
                 errorSpan.innerText = "400 bad request.";
             }
-            else if (error.code = 500) { //need this as well
+            else if (error.code = 500) {
                 errorSpan.innerText = "Internal server error.";
             }
             else if (error.code = 404) {
                 errorSpan.innerText = "404 Not found.";
             }
-            // else if (error != null) {
-            //     errorSpan.innerText = "Unable to establish connection with database";
-            // }
+
 
         });
 
@@ -119,12 +109,6 @@ function InvalidMsg(textbox) {
         textbox.setCustomValidity
             ('Invalid Company Id');
     }
-    // else if (dataLength == 0) {  //dont need this chunk
-    //     textbox.setCustomValidity
-    //         ('Unknown Company Id');
-    //         console.log("entered unknown company")
-    //         console.log(textbox); //goes inside here when uunknown company id passed
-    // }
     else {
         textbox.setCustomValidity('');
     }
@@ -170,7 +154,7 @@ function getGraphData(queueid) {
     time = time.replace("+", "%2B");
     var queue_id = queueid;
     console.log(queue_id);
-    
+
 
     fetch(`http://localhost:3000/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
         .then(response => response.json())
@@ -230,10 +214,10 @@ function drawChart(queue_id, countArray, timeArray) {
 }
 function loadChart(queue_id) {
     countArray = [];
-    timeArray=[];
-    update = setInterval(run=>drawChart(queue_id, countArray, timeArray), 3000);
+    timeArray = [];
+    update = setInterval(run => drawChart(queue_id, countArray, timeArray), 3000);
 }
 
-function stopGraph(){
+function stopGraph() {
     clearInterval(update);
 }
