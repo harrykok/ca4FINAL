@@ -63,6 +63,7 @@ function getQueueApi(trackerId) {
                 for (i = 0; i < data.length; i++) {
                     console.log(data[i].queue_id);
                     console.log(data[i].is_active);
+                    optionString += '<option name="options" value=""> Please Select...</option> ';
                     if (data[i].is_active == 1) {
                         optionString += '<option name="options" value="' + data[i].queue_id + '">' + data[i].queue_id + '</option> ';
                     } else if (data[i].is_active == 0) {
