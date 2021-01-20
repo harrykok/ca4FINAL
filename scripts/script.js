@@ -19,7 +19,8 @@ function addTracking() {
         '<td><span id="errorMsg' + trackerId + '"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><select class="queueId" id="queueId' + trackerId + '" onchange = "loadChart(this.value,' + trackerId + ')">' +
+        '<td><select class="queueId" id="queueId' + trackerId + '" onchange = "stopGraph(' + trackerId + '); loadChart(JSON.parse(this.value).queue_id,' + trackerId + ');">' +
+        '<option name="options" value=""> Please Select...</option> '+
         '</select></td>' +
         '<td colspan="2"><input type="checkbox" name="hideInactivez" onclick="hideInactives()" checked>' +
         '<label for="hideInactive" id="hideInactive">Hide Inactive</label></td>' +
@@ -59,16 +60,14 @@ function getQueueApi(trackerId) {
 
             else {
                 errorSpan.innerText = "";
-                var optionString = "";
+                var optionString = '<option name="options" value="#"> Please Select...</option>';
                 for (i = 0; i < data.length; i++) {
                     console.log(data[i].queue_id);
                     console.log(data[i].is_active);
-                    optionString += '<option name="options" value=""> Please Select...</option> ';
                     if (data[i].is_active == 1) {
-                        optionString += '<option name="options" value="' + data[i].queue_id + '">' + data[i].queue_id + '</option> ';
+                        optionString += '<option name="options" value=' + JSON.stringify(data[i]) + '>' + data[i].queue_id + '</option> ';
                     } else if (data[i].is_active == 0) {
-                        optionString += '<option name="options" value="' + data[i].is_active + '" disabled>' + data[i].queue_id + '</option> ';
-                        optionString += '<option name="options" value="' + data[i].queue_id + '" disabled>' + data[i].queue_id + '</option> ';
+                        optionString += '<option name="options" value=' + JSON.stringify(data[i]) + ' disabled>' + data[i].queue_id + '</option> ';
                     }
                 }
                 document.getElementById("queueId" + trackerId).innerHTML = optionString;
@@ -121,17 +120,19 @@ function InvalidMsg(textbox) {
 function hideInactives() {
     var Checkbox = document.getElementsByName("hideInactivez");
     var Options = document.getElementsByName("options");
-
+    
     if (Checkbox[0].checked == true) { //disable inactive
-        for (i = 0; i < Options.length; i++) {
-            if (Options[i].value == 0) {
+        for (i = 1; i < Options.length; i++) {
+           data = JSON.parse(Options[i].value)
+            if (data.is_active == 0) {
                 Options[i].disabled = true;
             }
         }
     }
     if (Checkbox[0].checked == false) { //dont disable inactive
-        for (i = 0; i < Options.length; i++) {
-            if (Options[i].value == 0) {
+        for (i = 1; i < Options.length; i++) {
+            data = JSON.parse(Options[i].value)
+            if (data.is_active == 0) {
                 Options[i].removeAttribute('disabled');
             }
         }
@@ -232,8 +233,11 @@ function loadChart(queue_id, trackerId) {
 }
 
 function stopGraph(trackerId) {
-   
-    console.log(update[trackerId].id)
-
-    clearInterval(update[trackerId].chart);
+    console.log(trackerId)
+   if(!update[trackerId]){
+     console.log('nothing');
+   }  else{
+       clearInterval(update[trackerId].chart); 
+       console.log(update[trackerId].id)
+   }
 }
