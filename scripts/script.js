@@ -1,5 +1,5 @@
 trackerId = 1;
-update=[];
+update = [];
 
 function addTracking() {
     //remove original addTracker
@@ -9,8 +9,8 @@ function addTracking() {
         '<div class="grid-item tracking" id="tracker' + trackerId + '">' +
         '<form action="#" onsubmit="getQueueApi(' + trackerId + ');return false">' +
         '<table class="tableAlign">' +
-        '<tr>' +                        //append trackerId to make companyid unique
-        '<td><input type="text" id="companyId' + trackerId + '" placeholder="Company Id" onInvalid="InvalidMsg(this)" oninput="InvalidMsg(this)" required="required"></td>' +
+        '<tr>' +                            //append trackerId to make companyid unique
+        '<td><input type="text" class="companyId" id="companyId' + trackerId + '" placeholder="Company Id" onInvalid="InvalidMsg(this)" oninput="InvalidMsg(this)" required="required"></td>' +
         '<td><input type="submit" id="search" value="Search"/></td>' +
         '<td><span class="cross" onclick="closeTracking(' + trackerId + ')">x</span></td>' +
         '<td id="closeTrackingCross"></td>' +
@@ -20,9 +20,8 @@ function addTracking() {
         '</tr>' +
         '<tr>' +
         '<td><select class="queueId" id="queueId' + trackerId + '" onchange = "stopGraph(' + trackerId + '); loadChart(JSON.parse(this.value).queue_id,' + trackerId + ');">' +
-        '<option name="options" value=""> Please Select...</option> '+
         '</select></td>' +
-        '<td colspan="2"><input type="checkbox" name="hideInactivez" onclick="hideInactives()" checked>' +
+        '<td colspan="2"><input type="checkbox" name="hideInactivez' + trackerId + '" onclick="hideInactives(' + trackerId + ')" checked>' +
         '<label for="hideInactive" id="hideInactive">Hide Inactive</label></td>' +
         '</tr>' +
         '</table>' +
@@ -49,25 +48,20 @@ function getQueueApi(trackerId) {
     var companyId = document.getElementById("companyId" + trackerId).value;
     var errorSpan = document.getElementById("errorMsg" + trackerId);
 
-
     fetch('http://localhost:3000/company/queue?company_id=' + companyId)
         .then(response => { return response.json(); })
         .then(data => {
             console.log(data);
             if (data.length == 0) { //check if there are any existing queues
                 errorSpan.innerText = "Unknown Company Id: " + companyId; //can do the error like this
-            }
-
-            else {
+            } else {
                 errorSpan.innerText = "";
-                var optionString = '<option name="options" value="#"> Please Select...</option>';
+                var optionString = '<option name="options' + trackerId + '" value="#"> Please Select...</option>';
                 for (i = 0; i < data.length; i++) {
-                    console.log(data[i].queue_id);
-                    console.log(data[i].is_active);
                     if (data[i].is_active == 1) {
-                        optionString += '<option name="options" value=' + JSON.stringify(data[i]) + '>' + data[i].queue_id + '</option> ';
+                        optionString += '<option name="options' + trackerId + '" value=' + JSON.stringify(data[i]) + '>' + data[i].queue_id + '</option> ';
                     } else if (data[i].is_active == 0) {
-                        optionString += '<option name="options" value=' + JSON.stringify(data[i]) + ' disabled>' + data[i].queue_id + '</option> ';
+                        optionString += '<option name="options' + trackerId + '" value=' + JSON.stringify(data[i]) + ' disabled>' + data[i].queue_id + '</option> ';
                     }
                 }
                 document.getElementById("queueId" + trackerId).innerHTML = optionString;
@@ -88,15 +82,11 @@ function getQueueApi(trackerId) {
             else if (error.code = 404) {
                 errorSpan.innerText = "404 Not found.";
             }
-
-
         });
-
 }
 
 function InvalidMsg(textbox) {
     var expressions = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-    //console.log(textbox);
     if (textbox.value === '') {
         textbox.setCustomValidity
             ('Company Id cannot be empty');
@@ -113,17 +103,16 @@ function InvalidMsg(textbox) {
     else {
         textbox.setCustomValidity('');
     }
-
     return true;
 }
 
-function hideInactives() {
-    var Checkbox = document.getElementsByName("hideInactivez");
-    var Options = document.getElementsByName("options");
-    
+function hideInactives(hideInactivesId) {
+    var Checkbox = document.getElementsByName("hideInactivez" + hideInactivesId);
+    var Options = document.getElementsByName("options" + hideInactivesId);
+
     if (Checkbox[0].checked == true) { //disable inactive
         for (i = 1; i < Options.length; i++) {
-           data = JSON.parse(Options[i].value)
+            data = JSON.parse(Options[i].value)
             if (data.is_active == 0) {
                 Options[i].disabled = true;
             }
@@ -137,7 +126,6 @@ function hideInactives() {
             }
         }
     }
-
 }
 
 function showGraph(trackerId) {
@@ -156,8 +144,7 @@ function getGraphData(queueid) {
     time = moment(time).format();
     time = time.replace("+", "%2B");
     var queue_id = queueid;
-    console.log(queue_id);
-
+    //console.log(queue_id);
 
     fetch(`http://localhost:3000/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
         .then(response => response.json())
@@ -171,10 +158,10 @@ function getGraphData(queueid) {
 }
 
 
-function drawChart(queue_id, countArray, timeArray,trackerId) {
+function drawChart(queue_id, countArray, timeArray, trackerId) {
     getGraphData(queue_id);
     var ctx = document.getElementById(trackerId);
-    console.log(countArray, timeArray);
+    //console.log(countArray, timeArray);
     var newChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -202,7 +189,6 @@ function drawChart(queue_id, countArray, timeArray,trackerId) {
             }]
         },
         options: {
-
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -218,7 +204,6 @@ function drawChart(queue_id, countArray, timeArray,trackerId) {
 function loadChart(queue_id, trackerId) {
     countArray = [];
     timeArray = [];
-    console.log(trackerId + 'hi');
     //draw bottom half box
     if (!document.getElementById("bottomhalf" + trackerId)) {
         document.getElementById("tracker" + trackerId).innerHTML +=
@@ -226,18 +211,20 @@ function loadChart(queue_id, trackerId) {
             '<canvas id="' + trackerId + '" width="200" height="100""></canvas>' +
             '</div>';
     }
-    update[trackerId]= {id: trackerId, chart:setInterval(function run() {
-        //put loading here
-        drawChart(queue_id, countArray, timeArray,trackerId)
-    }, 3000)}
+    update[trackerId] = {
+        id: trackerId, chart: setInterval(function run() {
+            //put loading here
+            drawChart(queue_id, countArray, timeArray, trackerId)
+        }, 3000)
+    }
 }
 
 function stopGraph(trackerId) {
-    console.log(trackerId)
-   if(!update[trackerId]){
-     console.log('nothing');
-   }  else{
-       clearInterval(update[trackerId].chart); 
-       console.log(update[trackerId].id)
-   }
+    //console.log(trackerId)
+    if (!update[trackerId]) {
+        console.log('nothing printing out');
+    } else {
+        clearInterval(update[trackerId].chart);
+        console.log(update[trackerId].id)
+    }
 }
