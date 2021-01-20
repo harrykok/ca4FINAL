@@ -16,7 +16,7 @@ function addTracking() {
         '<td id="closeTrackingCross"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><span id="errorMsg' + trackerId + '"></td>' +
+        '<td><span id="errorMsg' + trackerId + '" class="errorMsgText"></td>' +
         '</tr>' +
         '<tr>' +
         '<td><select class="queueId" id="queueId' + trackerId + '" onchange = "stopGraph(' + trackerId + '); loadChart(JSON.parse(this.value).queue_id,' + trackerId + ');">' +
@@ -71,7 +71,7 @@ function getQueueApi(trackerId) {
         .catch(error => {
             console.log(error);
             if (error = TypeError) {
-                errorSpan.innerText = "Failed to fetch";
+                errorSpan.innerText = "Failed to fetch!";
             }
             else if (error.code == 400) {
                 errorSpan.innerText = "400 bad request.";
@@ -138,7 +138,7 @@ function showGraph(trackerId) {
     }
 }
 
-function getGraphData(queueid) {
+function getGraphData(queueid, trackerId) {
     var time = moment();
     time = time.subtract(3, 'minutes');
     time = moment(time).format();
@@ -149,17 +149,23 @@ function getGraphData(queueid) {
     fetch(`http://localhost:3000/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
         .then(response => response.json())
         .then(data => {
+            //loading bar success
+            document.getElementById("loadingBar" + trackerId).innerHTML = '<div class="loaderSuccess"></div>';
             for (i = 0; i < data.length; i++) {
                 countArray[i] = data[i].count;
                 timeArray[i] = (new Date(data[i].timestamp * 1000).toLocaleString().slice(11));
             }
         })
-        .catch(console.error);
+        .catch(function () {
+            console.error();
+            //loading bar error
+            document.getElementById("loadingBar" + trackerId).innerHTML = '<div class="loaderError"></div>';
+        });
 }
 
 
 function drawChart(queue_id, countArray, timeArray, trackerId) {
-    getGraphData(queue_id);
+    getGraphData(queue_id, trackerId);
     var ctx = document.getElementById(trackerId);
     //console.log(countArray, timeArray);
     var newChart = new Chart(ctx, {
@@ -201,19 +207,21 @@ function drawChart(queue_id, countArray, timeArray, trackerId) {
         }
     });
 }
+
 function loadChart(queue_id, trackerId) {
     countArray = [];
     timeArray = [];
     //draw bottom half box
     if (!document.getElementById("bottomhalf" + trackerId)) {
         document.getElementById("tracker" + trackerId).innerHTML +=
+            '<div id="loadingBar' + trackerId + '"></div>' +
             '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
             '<canvas id="' + trackerId + '" width="200" height="100""></canvas>' +
             '</div>';
     }
     update[trackerId] = {
         id: trackerId, chart: setInterval(function run() {
-            //put loading here
+            //draw graph
             drawChart(queue_id, countArray, timeArray, trackerId)
         }, 3000)
     }
