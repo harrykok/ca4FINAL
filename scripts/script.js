@@ -153,7 +153,7 @@ function getGraphData(queueid, trackerId) {
             document.getElementById("loadingBar" + trackerId).innerHTML = '<div class="loaderSuccess"></div>';
             for (i = 0; i < data.length; i++) {
                 countArray[i] = data[i].count;
-                timeArray[i] = (new Date(data[i].timestamp * 1000).toLocaleString().slice(11));
+                timeArray[i] = (new Date(data[i].timestamp * 1000).toLocaleString().slice(11,-2));
             }
         })
         .catch(function () {
@@ -173,28 +173,20 @@ function drawChart(queue_id, countArray, timeArray, trackerId) {
         data: {
             labels: timeArray,
             datasets: [{
-                label: 'Arrival Rate',
                 data: countArray,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
                 ],
                 borderWidth: 1
             }]
         },
-        options: {
+        options: {  
+            legend: {
+                display: false
+           },
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -216,7 +208,7 @@ function loadChart(queue_id, trackerId) {
         document.getElementById("tracker" + trackerId).innerHTML +=
             '<div id="loadingBar' + trackerId + '"></div>' +
             '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
-            '<canvas id="' + trackerId + '" width="200" height="100""></canvas>' +
+            '<canvas id="' + trackerId + '" width="300" height="300""></canvas>' +
             '</div>';
     }
     update[trackerId] = {
