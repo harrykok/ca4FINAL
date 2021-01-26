@@ -1,17 +1,20 @@
 trackerId = 1;
 update = [];
+colors = ['#F7BBBC', '#E30A1F', '#FFC703'];
 
 function addTracking() {
+    //generate random color
+    const random_color = colors[Math.floor(Math.random() * colors.length)];
     //remove original addTracker
     document.getElementById("addTracking").remove();
     //add tracking box
     document.getElementById("grid-container").innerHTML +=
         '<div class="grid-item tracking" id="tracker' + trackerId + '">' +
-        '<form action="#" onsubmit="getQueueApi(' + trackerId + ');return false">' +
+        '<form action="#" style="background-color:' + random_color + '" onsubmit="getQueueApi(' + trackerId + ');return false;">' +
         '<table class="tableAlign">' +
-        '<tr>' +                            //append trackerId to make companyid unique
-        '<td><input type="text" class="companyId" id="companyId' + trackerId + '" placeholder="Company Id" onInvalid="InvalidMsg(this)" oninput="InvalidMsg(this)" required="required"></td>' +
-        '<td><input type="submit" id="search" value="Search"/></td>' +
+        '<tr>' +
+        '<td><input type="text" class="companyId" id="companyId' + trackerId + '" placeholder="  Company Id" onInvalid="InvalidMsg(this)" oninput="InvalidMsg(this)" required="required"></td>' +
+        '<td><input type="submit" class="search" id="search' + trackerId + '" value="Search"/></td>' +
         '<td><span class="cross" onclick="closeTracking(' + trackerId + ')">x</span></td>' +
         '<td id="closeTrackingCross"></td>' +
         '</tr>' +
@@ -19,13 +22,15 @@ function addTracking() {
         '<td><span id="errorMsg' + trackerId + '" class="errorMsgText"></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><select class="queueId" id="queueId' + trackerId + '" onchange = "stopGraph(' + trackerId + '); loadChart(JSON.parse(this.value).queue_id,' + trackerId + ');">' +
+        '<td><select class="queueId" id="queueId' + trackerId + '" onchange="stopGraph(' + trackerId + '); loadChart(JSON.parse(this.value).queue_id,' + trackerId + ');">' +
         '</select></td>' +
         '<td colspan="2"><input type="checkbox" name="hideInactivez' + trackerId + '" onclick="hideInactives(' + trackerId + ')" checked>' +
-        '<label for="hideInactive" id="hideInactive">Hide Inactive</label></td>' +
+        '<label for="hideInactive" id="hideInactive">Disable Inactive</label></td>' +
         '</tr>' +
         '</table>' +
         '</form>' +
+        '<div id="initiateLoadingbar' + trackerId + '">' +
+        '</div>' +
         '</div>';
     //add new addTracker box
     document.getElementById("grid-container").innerHTML +=
@@ -48,41 +53,59 @@ function getQueueApi(trackerId) {
     var companyId = document.getElementById("companyId" + trackerId).value;
     var errorSpan = document.getElementById("errorMsg" + trackerId);
 
-    fetch('http://localhost:3000/company/queue?company_id=' + companyId)
-        .then(response => { return response.json(); })
-        .then(data => {
-            console.log(data);
-            if (data.length == 0) { //check if there are any existing queues
-                errorSpan.innerText = "Unknown Company Id: " + companyId; //can do the error like this
-            } else {
-                errorSpan.innerText = "";
-                var optionString = '<option name="options' + trackerId + '" value="#"> Please Select...</option>';
-                for (i = 0; i < data.length; i++) {
-                    if (data[i].is_active == 1) {
-                        optionString += '<option name="options' + trackerId + '" value=' + JSON.stringify(data[i]) + '>' + data[i].queue_id + '</option> ';
-                    } else if (data[i].is_active == 0) {
-                        optionString += '<option name="options' + trackerId + '" value=' + JSON.stringify(data[i]) + ' disabled>' + data[i].queue_id + '</option> ';
-                    }
-                }
-                document.getElementById("queueId" + trackerId).innerHTML = optionString;
+    //add searchLoader animation
+    document.getElementById("search" + trackerId).style.border = "none";
+    document.getElementById("search" + trackerId).style.background = "linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82)";
+    document.getElementById("search" + trackerId).style.animation = "animatedgradient 3s ease alternate infinite";
+    document.getElementById("search" + trackerId).style.backgroundSize = "300% 300%";
+    setTimeout(function () {
 
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            if (error = TypeError) {
-                errorSpan.innerText = "Failed to fetch!";
-            }
-            else if (error.code == 400) {
-                errorSpan.innerText = "400 bad request.";
-            }
-            else if (error.code = 500) {
-                errorSpan.innerText = "Internal server error.";
-            }
-            else if (error.code = 404) {
-                errorSpan.innerText = "404 Not found.";
-            }
-        });
+        fetch('http://localhost:3000/company/queue?company_id=' + companyId)
+            .then(response => { return response.json(); })
+            .then(data => {
+                //add success searchLoader animation
+                document.getElementById("search" + trackerId).style.border = "3px solid green";
+                document.getElementById("search" + trackerId).style.background = "green";
+                document.getElementById("search" + trackerId).style.color = "white";
+
+                console.log(data);
+                if (data.length == 0) { //check if there are any existing queues
+                    errorSpan.innerText = "Unknown Company Id: " + companyId;
+                } else {
+                    errorSpan.innerText = "";
+                    var optionString = '<option name="options' + trackerId + '" value="#"> Please Select...</option>';
+                    for (i = 0; i < data.length; i++) {
+                        if (data[i].is_active == 1) {
+                            optionString += '<option name="options' + trackerId + '" value=' + JSON.stringify(data[i]) + '>' + data[i].queue_id + '</option> ';
+                        } else if (data[i].is_active == 0) {
+                            optionString += '<option name="options' + trackerId + '" value=' + JSON.stringify(data[i]) + ' disabled>' + data[i].queue_id + '</option> ';
+                        }
+                    }
+                    document.getElementById("queueId" + trackerId).innerHTML = optionString;
+                }
+            })
+            .catch(error => {
+                //add error searchLoader animation
+                document.getElementById("search" + trackerId).style.border = "3px solid red";
+                document.getElementById("search" + trackerId).style.background = "red";
+                document.getElementById("search" + trackerId).style.color = "white";
+
+                console.log(error);
+                if (error = TypeError) {
+                    errorSpan.innerText = "Failed to fetch!";
+                }
+                else if (error.code == 400) {
+                    errorSpan.innerText = "400 bad request.";
+                }
+                else if (error.code = 500) {
+                    errorSpan.innerText = "Internal server error.";
+                }
+                else if (error.code = 404) {
+                    errorSpan.innerText = "404 Not found.";
+                }
+            });
+
+    }, 3000);
 }
 
 function InvalidMsg(textbox) {
@@ -210,7 +233,7 @@ function populateGraph(countArray, timeArray, trackerId) {
 function loadChart(queue_id, trackerId) {
     //draw bottom half box
     if (!document.getElementById("bottomhalf" + trackerId)) {
-        document.getElementById("tracker" + trackerId).innerHTML +=
+        document.getElementById("initiateLoadingbar" + trackerId).innerHTML +=
             '<div id="loadingBar' + trackerId + '"></div>' +
             '<div class="bottomHalf" id="bottomhalf' + trackerId + '">' +
             '<canvas id="' + trackerId + '" width="300" height="300""></canvas>' +
@@ -227,7 +250,7 @@ function loadChart(queue_id, trackerId) {
 function stopGraph(trackerId) {
     //console.log(trackerId)
     if (update.length == 0) {
-        console.log('nothing printing out');
+        //console.log('nothing printing out');
     } else if (update[trackerId] == undefined) {
         console.log('no chart');
     } else {
