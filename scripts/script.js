@@ -146,15 +146,19 @@ function getGraphData(queueid, trackerId) {
     var queue_id = queueid;
     //console.log(queue_id);
 
+
     fetch(`http://localhost:3000/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
         .then(response => response.json())
         .then(data => {
+            var countArray = [];
+            var timeArray = [];
             //loading bar success
             document.getElementById("loadingBar" + trackerId).innerHTML = '<div class="loaderSuccess"></div>';
             for (i = 0; i < data.length; i++) {
                 countArray[i] = data[i].count;
-                timeArray[i] = (new Date(data[i].timestamp * 1000).toLocaleString().slice(11,-2));
+                timeArray[i] = (new Date(data[i].timestamp * 1000).toLocaleString().slice(11, -2));
             }
+            populateGraph(countArray, timeArray, trackerId);
         })
         .catch(function () {
             console.error();
@@ -164,8 +168,11 @@ function getGraphData(queueid, trackerId) {
 }
 
 
-function drawChart(queue_id, countArray, timeArray, trackerId) {
-    getGraphData(queue_id, trackerId);
+function drawChart(queue_id, trackerId) {
+    getGraphData(queue_id, trackerId)
+}
+
+function populateGraph(countArray, timeArray, trackerId) {
     var ctx = document.getElementById(trackerId);
     //console.log(countArray, timeArray);
     var newChart = new Chart(ctx, {
@@ -183,10 +190,10 @@ function drawChart(queue_id, countArray, timeArray, trackerId) {
                 borderWidth: 1
             }]
         },
-        options: {  
+        options: {
             legend: {
                 display: false
-           },
+            },
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -201,8 +208,6 @@ function drawChart(queue_id, countArray, timeArray, trackerId) {
 }
 
 function loadChart(queue_id, trackerId) {
-    countArray = [];
-    timeArray = [];
     //draw bottom half box
     if (!document.getElementById("bottomhalf" + trackerId)) {
         document.getElementById("tracker" + trackerId).innerHTML +=
@@ -214,17 +219,18 @@ function loadChart(queue_id, trackerId) {
     update[trackerId] = {
         id: trackerId, chart: setInterval(function run() {
             //draw graph
-            drawChart(queue_id, countArray, timeArray, trackerId)
+            drawChart(queue_id, trackerId)
         }, 3000)
     }
 }
 
 function stopGraph(trackerId) {
     //console.log(trackerId)
-    if (!update[trackerId]) {
+    if (update.length == 0) {
         console.log('nothing printing out');
+    } else if (update[trackerId] == undefined) {
+        console.log('no chart');
     } else {
         clearInterval(update[trackerId].chart);
-        console.log(update[trackerId].id)
     }
 }
