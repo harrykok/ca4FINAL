@@ -60,7 +60,7 @@ function getQueueApi(trackerId) {
     document.getElementById("search" + trackerId).style.backgroundSize = "300% 300%";
     setTimeout(function () {
 
-        fetch('http://localhost:3000/company/queue?company_id=' + companyId)
+        fetch('https://ades-2b02.herokuapp.com/company/queue?company_id=' + companyId)
             .then(response => { return response.json(); })
             .then(data => {
                 //add success searchLoader animation
@@ -170,7 +170,7 @@ function getGraphData(queueid, trackerId) {
     //console.log(queue_id);
 
 
-    fetch(`http://localhost:3000/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
+    fetch(`https://ades-2b02.herokuapp.com/company/arrival_rate?queue_id=${queue_id}&from=${time}&duration=3`)
         .then(response => response.json())
         .then(data => {
             var countArray = [];
