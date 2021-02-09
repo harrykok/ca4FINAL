@@ -1,8 +1,27 @@
 <html>
-    <head>
-        <link type="text/css" rel="stylesheet" href="./styles/style.css" />
 
-        <script type="text/javascript" src="./scripts/script.js"></script>
-    </head>
-    <body></body>
+<head>
+    <link type="text/css" rel="stylesheet" href="./styles/style.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="icon" href="images/mcdonalds.png" type="image/png" sizes="16x16">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script type="text/javascript" src="./scripts/script.js"></script>
+</head>
+
+<body>
+    <div id="navBar">
+        <img src="images/mcdonalds.png" width="40" height="40" style="padding-left:5%; margin:5px">
+    </div>
+    <div class="grid-container" id="grid-container">
+        <div class="grid-item" id="addTracking" onclick=addTracking()>
+            <span class="circle plus"></span><a class="addAnotherText">Add another</a>
+        </div>
+    </div>
+    <div>
+        <img src="images/mcdonalds.png" width="500" height="500" style="position: absolute; bottom:60; right:60; z-index: -1; opacity: 0.2; transform: rotate(-15deg);">
+    </div>
+</body>
+
 </html>
